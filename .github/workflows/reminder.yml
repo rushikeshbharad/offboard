@@ -13,7 +13,17 @@ jobs:
     steps:
       - name: Download sheet
         run: |
-          curl -L "${{ secrets.OFFBOARD_SHEET }}" -o sheet.csv
+          SHEET_URL="${{ secrets.OFFBOARD_SHEET }}"
+          # Convert Google Sheet URL to export format if needed
+          if [[ "$SHEET_URL" == *"docs.google.com"* ]]; then
+            SHEET_URL=$(echo "$SHEET_URL" | sed -E 's|/edit.*|/export?format=csv|; s|/pubhtml.*|/pub?output=csv|')
+          fi
+          curl -L "$SHEET_URL" -o sheet.csv
+          
+          if grep -q "<!DOCTYPE html" sheet.csv; then
+            echo "Error: Downloaded file is HTML. Check OFFBOARD_SHEET secret."
+            exit 1
+          fi
 
       - name: Extract titles and set output
         id: extract
