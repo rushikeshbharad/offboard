@@ -39,4 +39,4 @@ jobs:
           curl -s -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="Pending chores:%0A$TITLES"
+            -d text="Pending chores:%0A$TITLES%0A%0AEdit: ${{ secrets.OFFBOARD_SHEET }}"
