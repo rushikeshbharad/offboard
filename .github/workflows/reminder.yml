@@ -1,4 +1,4 @@
-name: Read Google Sheet
+name: Reminder
 
 on:
   workflow_dispatch:
