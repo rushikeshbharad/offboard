@@ -28,7 +28,7 @@ jobs:
       - name: Extract titles and set output
         id: extract
         run: |
-          titles=$(awk -F',' 'NR>1 && $2 <= strftime("%Y-%m-%d") { printf "%%0A%%0A%s", $1 }' sheet.csv)
+          titles=$(awk -F',' 'NR>1 && $2 <= strftime("%Y-%m-%d") { printf "%%0A • %s", $1 }' sheet.csv)
           
           echo "titles=$titles" >> "$GITHUB_OUTPUT"
 
@@ -39,4 +39,4 @@ jobs:
           curl -s -X POST \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="Pending chores: $TITLES"
+            -d text="Pending chores:%0A$TITLES"
