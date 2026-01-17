@@ -1,0 +1,32 @@
+name: Read Google Sheet
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 2 * * *"
+    - cron: "30 6 * * *"
+    - cron: "30 11 * * *"
+
+jobs:
+  read-sheet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download sheet
+        run: |
+          curl -L "{{ secrets.OFFBOARD_SHEET }}" -o sheet.csv
+
+      - name: Extract titles and set output
+        id: extract
+        run: |
+          titles=$(awk -F',' 'NR>1 && $2 <= strftime("%Y-%m-%d") { printf "%%0A%%0A%s", $1 }' sheet.csv)
+          
+          echo "titles=$titles" >> "$GITHUB_OUTPUT"
+
+      - name: Send success notification
+        env:
+          TITLES: ${{ steps.extract.outputs.titles }}
+        run: |
+          curl -s -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d text="Pending chores: $TITLES"
