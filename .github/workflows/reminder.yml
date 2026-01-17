@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Download sheet
         run: |
-          curl -L "{{ secrets.OFFBOARD_SHEET }}" -o sheet.csv
+          curl -L "${{ secrets.OFFBOARD_SHEET }}" -o sheet.csv
 
       - name: Extract titles and set output
         id: extract
